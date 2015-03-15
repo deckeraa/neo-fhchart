@@ -16,6 +16,7 @@ import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import org.apache.fop.svg.PDFTranscoder;
@@ -44,6 +45,7 @@ public class NeoFHChart
     JFrame frame;
     JButton load_b = new JButton("Load SVG");
     JButton export_pdf_b = new JButton("Export PDF");
+    JButton export_png_b = new JButton("Export PNG");
     JSVGCanvas svgCanvas = new JSVGCanvas();
 
     public NeoFHChart(JFrame f) {
@@ -56,6 +58,7 @@ public class NeoFHChart
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.add(load_b);
         p.add(export_pdf_b);
+        p.add(export_png_b);
 
         panel.add("North", p);
         panel.add("Center", svgCanvas);
@@ -79,7 +82,7 @@ public class NeoFHChart
         export_pdf_b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
 
-                    System.out.println("Transcoding...");
+                    System.out.println("Exporting to PDF....");
                     try{
                         String svg_URI_input = Paths.get("SVG_logo.svg").toUri().toURL().toString();
                         TranscoderInput input_svg_image = new TranscoderInput(svg_URI_input);        
@@ -93,6 +96,27 @@ public class NeoFHChart
                     catch(Exception e){
                         // TODO real exception handling
                     }
+                    System.out.println("Done.");
+                }
+            });
+
+        export_png_b.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) {
+                    System.out.println("Exporting to PNG....");
+                    try {
+                    PNGTranscoder t = new PNGTranscoder();
+                    String svg_URI_input = Paths.get("SVG_logo.svg").toUri().toURL().toString();
+                    TranscoderInput input = new TranscoderInput( svg_URI_input );
+                    OutputStream png_ostream = new FileOutputStream("SVG_logo.png");
+                    TranscoderOutput output = new TranscoderOutput(png_ostream);
+                    t.transcode(input, output);
+                    png_ostream.flush();
+                    png_ostream.close();
+                    }
+                    catch(Exception e){
+                        // TODO real exception handling
+                    }
+                    System.out.println("Done.");
                 }
             });
 
