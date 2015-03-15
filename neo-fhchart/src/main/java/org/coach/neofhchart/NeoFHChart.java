@@ -40,6 +40,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.DOMImplementation;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 
+import org.fhaes.fhfilereader.*;
+
 /**
  * Hello world!
  *
@@ -48,7 +50,7 @@ public class NeoFHChart
 {
     // credits for this function goes to http://stackoverflow.com/questions/2325388/java-shortest-way-to-pretty-print-to-stdout-a-org-w3c-dom-document
     // no credit goes to Java for being excessively verbose
-    public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
+    /*    public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
@@ -59,7 +61,7 @@ public class NeoFHChart
 
         transformer.transform(new DOMSource(doc), 
                               new StreamResult(new OutputStreamWriter(out, "UTF-8")));
-    }
+                              }*/
 
 
     public static void main( String[] args )
@@ -123,22 +125,21 @@ public class NeoFHChart
         panel.add("North", p);
         panel.add("Center", svgCanvas);
 
+        File f = new File("./uscbe001.fhx");
+
         // Set the button action.
         load_b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     System.out.println("clicked");
                     svgCanvas.setDocument( buildSVG() );
-                    // svgCanvas.setSVGDocument( buildSVG() );
-                    // JFileChooser fc = new JFileChooser(".");
-                    // int choice = fc.showOpenDialog(panel);
-                    // if (choice == JFileChooser.APPROVE_OPTION) {
-                    //     File f = fc.getSelectedFile();
-                    //     try {
-                    //         svgCanvas.setURI(f.toURL().toString());
-                    //     } catch (IOException ex) {
-                    //         ex.printStackTrace();
-                    //     }
-                    // }
+
+                    JFileChooser fc = new JFileChooser(".");
+                    int choice = fc.showOpenDialog(panel);
+                    if (choice == JFileChooser.APPROVE_OPTION) {
+                        File f = fc.getSelectedFile(); // TODO hard-coded for testing.
+                        // File f = new File("./uscbe001.fhx");
+                        FHX2FileReader fr = new FHX2FileReader(f);
+                    }
                 }
             });
 
