@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 
+// SVG imports
 import org.apache.batik.swing.JSVGCanvas;
 import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
 import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
@@ -21,12 +22,46 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import org.apache.fop.svg.PDFTranscoder;
 
+// XML imports
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+ 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.w3c.dom.DOMImplementation;
+import org.apache.batik.dom.svg.SVGDOMImplementation;
+
 /**
  * Hello world!
  *
  */
 public class NeoFHChart 
 {
+    // credits for this function goes to http://stackoverflow.com/questions/2325388/java-shortest-way-to-pretty-print-to-stdout-a-org-w3c-dom-document
+    // no credit goes to Java for being excessively verbose
+    public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+        transformer.transform(new DOMSource(doc), 
+                              new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+    }
+
+
     public static void main( String[] args )
     {
         JFrame f = new JFrame("NeoFHChart");
@@ -40,6 +75,31 @@ public class NeoFHChart
         f.setSize(400, 400);
         f.setVisible(true);
         System.out.println( "Hello World!" );
+
+    }
+
+    public Document buildSVG(){
+        DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
+    	String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
+    	Document doc = impl.createDocument(svgNS, "svg", null);
+
+        Element svgRoot = doc.getDocumentElement();
+
+        svgRoot.setAttributeNS(null, "width", "400");
+    	svgRoot.setAttributeNS(null, "height", "450");
+
+    	// create the rectangle
+    	Element rectangle = doc.createElementNS(svgNS, "rect");
+    	rectangle.setAttributeNS(null, "x", "10");
+    	rectangle.setAttributeNS(null, "y", "20");
+    	rectangle.setAttributeNS(null, "width", "100");
+    	rectangle.setAttributeNS(null, "height", "50");
+    	rectangle.setAttributeNS(null, "fill", "#FF9900");
+
+    	// attach the rectangle to the svg root element
+    	svgRoot.appendChild(rectangle);
+
+        return doc;
     }
 
     JFrame frame;
@@ -66,16 +126,19 @@ public class NeoFHChart
         // Set the button action.
         load_b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    JFileChooser fc = new JFileChooser(".");
-                    int choice = fc.showOpenDialog(panel);
-                    if (choice == JFileChooser.APPROVE_OPTION) {
-                        File f = fc.getSelectedFile();
-                        try {
-                            svgCanvas.setURI(f.toURL().toString());
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
+                    System.out.println("clicked");
+                    svgCanvas.setDocument( buildSVG() );
+                    // svgCanvas.setSVGDocument( buildSVG() );
+                    // JFileChooser fc = new JFileChooser(".");
+                    // int choice = fc.showOpenDialog(panel);
+                    // if (choice == JFileChooser.APPROVE_OPTION) {
+                    //     File f = fc.getSelectedFile();
+                    //     try {
+                    //         svgCanvas.setURI(f.toURL().toString());
+                    //     } catch (IOException ex) {
+                    //         ex.printStackTrace();
+                    //     }
+                    // }
                 }
             });
 
