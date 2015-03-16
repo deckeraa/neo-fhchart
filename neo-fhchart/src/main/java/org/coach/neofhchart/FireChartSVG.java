@@ -179,6 +179,21 @@ public class FireChartSVG {
         }
         series_group.appendChild(series_fire_events);
         
+        // add in inner year pith marker
+        if( s.hasPith() ){
+        	Element pith_marker = doc.createElementNS(svgNS, "rect");
+        	int height = 5;
+        	pith_marker.setAttributeNS(null, "x", "0"); // inner year
+        	pith_marker.setAttributeNS(null, "y", Integer.toString(-height/2));
+        	pith_marker.setAttributeNS(null, "width", "1");
+        	pith_marker.setAttributeNS(null, "height", Integer.toString(height));
+        	pith_marker.setAttributeNS(null, "fill", "black");
+        	series_group.appendChild(pith_marker);
+        }
+        else {
+        }
+        
+        
         return series_group;
     }
 
