@@ -91,10 +91,22 @@ public class FireChartSVG {
     	ArrayList<FHSeries> series_arr = f.getSeriesList();
     	for(int i = 0; i < series_arr.size(); i++) {
             
-            Element series_group = buildSingleSeries( doc, svgNS, series_arr.get(i) );
-            int x_offset = series_arr.get(i).getFirstYear() - f.getFirstYear();
+    		FHSeries s = series_arr.get(i);
+    		// add in the series group, which has the lines and ticks
+            Element series_group = buildSingleSeries( doc, svgNS, s );
+            int x_offset = s.getFirstYear() - f.getFirstYear();
             series_group.setAttributeNS(null, "transform", "translate("+Integer.toString(x_offset)+","+Integer.toString(i*spacing)+")");
-            //series_group.appendChild(series_line);
+            
+            // add in the label for the series
+            Text series_name_text = doc.createTextNode(s.getTitle());
+            Element series_name = doc.createElementNS(svgNS, "text");
+            series_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() - f.getFirstYear() + 5));
+            series_name.setAttributeNS(null, "y", Integer.toString(i*spacing) );
+            series_name.setAttributeNS(null, "font-family", "Verdana");
+            series_name.setAttributeNS(null, "font-size", "8");
+            series_name.appendChild(series_name_text);
+            
+            chronologyPlot.appendChild(series_name);
             chronologyPlot.appendChild(series_group);	
     	}
         //    	chronologyPlot.setAttributeNS(null, "display", "none");
@@ -148,6 +160,7 @@ public class FireChartSVG {
         series_group.appendChild(series_fire_events);
         
         // add series label
+        /*
         Text series_name_text = doc.createTextNode(s.getTitle());
         Element series_name = doc.createElementNS(svgNS, "text");
         series_name.setAttributeNS(null, "x", Integer.toString(5));
@@ -157,11 +170,12 @@ public class FireChartSVG {
         //            series_name.setAttributeNS(null, "fill", "blue");
         series_name.appendChild(series_name_text);
         series_group.appendChild(series_name);
+        */
         
         return series_group;
     }
 
-    private static Element getRect(Document doc, String svgNS, AbstractFireHistoryReader f){
+    /*private static Element getRect(Document doc, String svgNS, AbstractFireHistoryReader f){
         Element rectangle = doc.createElementNS(svgNS, "rect");
     	rectangle.setAttributeNS(null, "x", "10");
     	rectangle.setAttributeNS(null, "y", "20");
@@ -169,5 +183,5 @@ public class FireChartSVG {
     	rectangle.setAttributeNS(null, "height", "50");
     	rectangle.setAttributeNS(null, "fill", "#FF9900");
         return rectangle;
-    };
+    };*/
 }
