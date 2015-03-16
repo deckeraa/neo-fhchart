@@ -42,28 +42,8 @@ import org.apache.batik.dom.svg.SVGDOMImplementation;
 
 import org.fhaes.fhfilereader.*;
 
-/**
- * Hello world!
- *
- */
 public class NeoFHChart 
 {
-    // credits for this function goes to http://stackoverflow.com/questions/2325388/java-shortest-way-to-pretty-print-to-stdout-a-org-w3c-dom-document
-    // no credit goes to Java for being excessively verbose
-    /*    public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-        transformer.transform(new DOMSource(doc), 
-                              new StreamResult(new OutputStreamWriter(out, "UTF-8")));
-                              }*/
-
-
     public static void main( String[] args )
     {
         JFrame f = new JFrame("NeoFHChart");
@@ -74,34 +54,10 @@ public class NeoFHChart
                     System.exit(0);
                 }
             });
-        f.setSize(400, 400);
+        f.setSize(600, 600);
         f.setVisible(true);
         System.out.println( "Hello World!" );
 
-    }
-
-    public Document buildSVG(){
-        DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
-    	String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
-    	Document doc = impl.createDocument(svgNS, "svg", null);
-
-        Element svgRoot = doc.getDocumentElement();
-
-        svgRoot.setAttributeNS(null, "width", "400");
-    	svgRoot.setAttributeNS(null, "height", "450");
-
-    	// create the rectangle
-    	Element rectangle = doc.createElementNS(svgNS, "rect");
-    	rectangle.setAttributeNS(null, "x", "10");
-    	rectangle.setAttributeNS(null, "y", "20");
-    	rectangle.setAttributeNS(null, "width", "100");
-    	rectangle.setAttributeNS(null, "height", "50");
-    	rectangle.setAttributeNS(null, "fill", "#FF9900");
-
-    	// attach the rectangle to the svg root element
-    	svgRoot.appendChild(rectangle);
-
-        return doc;
     }
 
     JFrame frame;
@@ -125,22 +81,51 @@ public class NeoFHChart
         panel.add("North", p);
         panel.add("Center", svgCanvas);
 
+        // TODO remove this code.
+        // It is only here to save keystrokes while testing
         File f = new File("./uscbe001.fhx");
+        FHX2FileReader fr = new FHX2FileReader(f);
+        Document d = FireChartSVGFactory.buildSVGFromReader( fr );
+        FireChartSVGFactory.printDocument(d, System.out);
+        svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
+        svgCanvas.setEnableImageZoomInteractor(true);
+        svgCanvas.setEnablePanInteractor(true);
+        svgCanvas.addSVGDocumentLoaderListener(new SVGDocumentLoaderAdapter() {
+            public void documentLoadingStarted(SVGDocumentLoaderEvent e) {
+            	System.out.println("loading started");
+            }
+            public void documentLoadingCompleted(SVGDocumentLoaderEvent e) {
+            	System.out.println("loading completed");
+            }
+        });
+        
+        svgCanvas.setDocument(d);
 
+        
         // Set the button action.
         load_b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
-                    System.out.println("clicked");
-                    svgCanvas.setDocument( buildSVG() );
+			public void actionPerformed(ActionEvent ae) {
+				System.out.println("clicked");
+				// svgCanvas.setDocument( buildSVG() );
 
-                    JFileChooser fc = new JFileChooser(".");
-                    int choice = fc.showOpenDialog(panel);
-                    if (choice == JFileChooser.APPROVE_OPTION) {
-                        File f = fc.getSelectedFile(); // TODO hard-coded for testing.
-                        // File f = new File("./uscbe001.fhx");
-                        FHX2FileReader fr = new FHX2FileReader(f);
-                    }
-                }
+				JFileChooser fc = new JFileChooser(".");
+				int choice = fc.showOpenDialog(panel);
+				if (choice == JFileChooser.APPROVE_OPTION) {
+					File f = fc.getSelectedFile(); 
+					
+					// TODO hard-coded for
+													// testing.
+					// File f = new File("./uscbe001.fhx");
+					//FHX2FileReader fr = new FHX2FileReader(f);
+					//Document d = FireChartSVGFactory.buildSVGFromReader(fr);
+					//svgCanvas.setDocument(d);
+					try {
+						svgCanvas.setURI(f.toURL().toString());
+					}catch (IOException e){
+						e.printStackTrace();
+					}
+				}
+			}
             });
 
         export_pdf_b.addActionListener(new ActionListener() {
