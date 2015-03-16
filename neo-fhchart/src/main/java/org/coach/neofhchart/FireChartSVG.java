@@ -68,9 +68,10 @@ public class FireChartSVG {
     	Element chronologyPlot = doc.createElementNS(svgNS, "g");
         chronologyPlot.setAttributeNS(null, "id", "chronology_plot");
         chronologyPlot.setAttributeNS(null, "transform", "translate(-"+Integer.toString(f.getFirstYear())+",20) scale(1.1)");
+        chronologyPlot.setAttributeNS(null, "display", "inline");
         //        chronologyPlot.setAttributeNS(null, "stroke", "black");
         //        chronologyPlot.setAttributeNS(null, "stroke-width", "black");
-        int spacing = 10;
+        int spacing = 20;
          	
         // build all of the series
     	ArrayList<FHSeries> series_arr = f.getSeriesList();
@@ -86,7 +87,7 @@ public class FireChartSVG {
             	int begin_index = 0;
             	boolean isRecording = recording_years[0];
             	for(int j = 1; j < recording_years.length; j++) {
-            		if(isRecording != recording_years[j]) { //need to draw a line
+            		if(isRecording != recording_years[j] || j == recording_years.length - 1) { //need to draw a line
             			Element series_line = doc.createElementNS(svgNS, "line");
                         series_line.setAttributeNS(null, "x1", Integer.toString( s.getFirstYear() + begin_index ));
                         series_line.setAttributeNS(null, "y1", Integer.toString(i*spacing) );
