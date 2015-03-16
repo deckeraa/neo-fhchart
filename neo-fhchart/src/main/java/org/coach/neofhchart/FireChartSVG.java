@@ -161,6 +161,24 @@ public class FireChartSVG {
         }
         series_group.appendChild(series_fire_events);
         
+        // add in injury events
+        Element series_injury_events = doc.createElementNS(svgNS, "g");
+        boolean[] injury_years = s.getInjuryYears();
+        for(int j = 0; j < injury_years.length; j++) {
+        	if( injury_years[j] ) {
+        		Element fire_event = doc.createElementNS(svgNS, "rect");
+        		int width = 3;
+        		fire_event.setAttributeNS(null, "x", Integer.toString(j- width/2));
+            	fire_event.setAttributeNS(null, "y", Integer.toString(-SERIES_HEIGHT/2) );
+            	fire_event.setAttributeNS(null, "width", Integer.toString(width));
+            	fire_event.setAttributeNS(null, "height", Integer.toString(SERIES_HEIGHT));
+            	fire_event.setAttributeNS(null, "fill", "none");
+            	fire_event.setAttributeNS(null, "stroke", "black");
+            	series_fire_events.appendChild(fire_event);
+        	}
+        }
+        series_group.appendChild(series_fire_events);
+        
         return series_group;
     }
 
