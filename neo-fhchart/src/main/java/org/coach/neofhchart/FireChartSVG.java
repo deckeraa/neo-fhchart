@@ -17,6 +17,8 @@ public class FireChartSVG {
     public Document doc;
     private String svgNS;
     private DOMImplementation impl;
+    
+    private static int SERIES_HEIGHT = 10;
 
     public static void printDocument(Document doc, OutputStream out) {
         try {
@@ -101,7 +103,7 @@ public class FireChartSVG {
             Text series_name_text = doc.createTextNode(s.getTitle());
             Element series_name = doc.createElementNS(svgNS, "text");
             series_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() - f.getFirstYear() + 5));
-            series_name.setAttributeNS(null, "y", Integer.toString(i*spacing) );
+            series_name.setAttributeNS(null, "y", Integer.toString(i*spacing + SERIES_HEIGHT/2) );
             series_name.setAttributeNS(null, "font-family", "Verdana");
             series_name.setAttributeNS(null, "font-size", "8");
             series_name.appendChild(series_name_text);
@@ -150,38 +152,16 @@ public class FireChartSVG {
         	if( fire_years[j] ) {
         		Element fire_event = doc.createElementNS(svgNS, "rect");
         		fire_event.setAttributeNS(null, "x", Integer.toString(j));
-            	fire_event.setAttributeNS(null, "y", "0" );
+            	fire_event.setAttributeNS(null, "y", Integer.toString(-SERIES_HEIGHT/2) );
             	fire_event.setAttributeNS(null, "width", "1");
-            	fire_event.setAttributeNS(null, "height", "10");
-            	fire_event.setAttributeNS(null, "fill", "#FF9900");
+            	fire_event.setAttributeNS(null, "height", Integer.toString(SERIES_HEIGHT));
+            	fire_event.setAttributeNS(null, "fill", "black");
             	series_fire_events.appendChild(fire_event);
         	}
         }
         series_group.appendChild(series_fire_events);
         
-        // add series label
-        /*
-        Text series_name_text = doc.createTextNode(s.getTitle());
-        Element series_name = doc.createElementNS(svgNS, "text");
-        series_name.setAttributeNS(null, "x", Integer.toString(5));
-        series_name.setAttributeNS(null, "y", "0" );
-        series_name.setAttributeNS(null, "font-family", "Verdana");
-        series_name.setAttributeNS(null, "font-size", "8");
-        //            series_name.setAttributeNS(null, "fill", "blue");
-        series_name.appendChild(series_name_text);
-        series_group.appendChild(series_name);
-        */
-        
         return series_group;
     }
 
-    /*private static Element getRect(Document doc, String svgNS, AbstractFireHistoryReader f){
-        Element rectangle = doc.createElementNS(svgNS, "rect");
-    	rectangle.setAttributeNS(null, "x", "10");
-    	rectangle.setAttributeNS(null, "y", "20");
-    	rectangle.setAttributeNS(null, "width", "100");
-    	rectangle.setAttributeNS(null, "height", "50");
-    	rectangle.setAttributeNS(null, "fill", "#FF9900");
-        return rectangle;
-    };*/
 }
