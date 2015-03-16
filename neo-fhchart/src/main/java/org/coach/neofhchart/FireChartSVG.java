@@ -191,6 +191,10 @@ public class FireChartSVG {
         	series_group.appendChild(pith_marker);
         }
         else {
+        	Element no_pith_marker = doc.createElementNS(svgNS, "polygon");
+        	no_pith_marker.setAttributeNS(null, "points", "-2,1 5,-5 2,1");
+        	no_pith_marker.setAttributeNS(null, "fill", "black");
+        	series_group.appendChild(no_pith_marker);
         }
         
         
