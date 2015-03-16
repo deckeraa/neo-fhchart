@@ -92,6 +92,7 @@ public class NeoFHChart
         //        FireChartSVGFactory.printDocument(d, System.out);
         chart = new FireChartSVG(fr);
         chart.print();
+        chart.dumpDocument();
         svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
         svgCanvas.setEnableImageZoomInteractor(true);
         svgCanvas.setEnablePanInteractor(true);
