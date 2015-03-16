@@ -45,20 +45,25 @@ public class FireChartSVGFactory {
     
     private static Element getChronologyPlot(Document doc, String svgNS, AbstractFireHistoryReader f) {
     	Element chronologyPlot = doc.createElementNS(svgNS, "g");
+        chronologyPlot.setAttributeNS(null, "transform", "translate(-"+Integer.toString(f.getFirstYear())+",0)");
         int spacing = 10;
-    	
-    	FHSeries s;
+         	
     	ArrayList<FHSeries> series_arr = f.getSeriesList();
     	for(int i = 0; i < series_arr.size(); i++) {
-    	//for( FHSeries series : f.getSeriesList() ) {
+    		Element series_group= doc.createElementNS(svgNS, "g");
+    		FHSeries s = series_arr.get(i);
+    		series_group.setAttributeNS(null, "id", s.getTitle());
+    		
     		Element series_line = doc.createElementNS(svgNS, "line");
-    		series_line.setAttributeNS(null, "x1", "0");
-    		series_line.setAttributeNS(null, "y1", Integer.toString(i*spacing) );
-    		series_line.setAttributeNS(null, "x2", "200");
-    		series_line.setAttributeNS(null, "y2", Integer.toString(i*spacing));
-    		series_line.setAttributeNS(null, "stroke", "black");
-    		series_line.setAttributeNS(null, "stroke-width", "1");	
-    		chronologyPlot.appendChild(series_line);	
+            series_line.setAttributeNS(null, "x1", Integer.toString( s.getFirstYear()));
+            series_line.setAttributeNS(null, "y1", Integer.toString(i*spacing) );
+            series_line.setAttributeNS(null, "x2", Integer.toString( s.getLastYear() ));
+            series_line.setAttributeNS(null, "y2", Integer.toString(i*spacing));
+            series_line.setAttributeNS(null, "stroke", "black");
+            series_line.setAttributeNS(null, "stroke-width", "1");
+            
+            series_group.appendChild(series_line);
+            chronologyPlot.appendChild(series_group);	
     	}
     	
     	return chronologyPlot;
