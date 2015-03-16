@@ -67,26 +67,46 @@ public class FireChartSVG {
     private static Element getChronologyPlot(Document doc, String svgNS, AbstractFireHistoryReader f) {
     	Element chronologyPlot = doc.createElementNS(svgNS, "g");
         chronologyPlot.setAttributeNS(null, "id", "chronology_plot");
-        chronologyPlot.setAttributeNS(null, "transform", "translate(-"+Integer.toString(f.getFirstYear())+",20)");
+        chronologyPlot.setAttributeNS(null, "transform", "translate(-"+Integer.toString(f.getFirstYear())+",20) scale(1.1)");
         //        chronologyPlot.setAttributeNS(null, "stroke", "black");
         //        chronologyPlot.setAttributeNS(null, "stroke-width", "black");
         int spacing = 10;
          	
+        // build all of the series
     	ArrayList<FHSeries> series_arr = f.getSeriesList();
     	for(int i = 0; i < series_arr.size(); i++) {
             Element series_group= doc.createElementNS(svgNS, "g");
             FHSeries s = series_arr.get(i);
             series_group.setAttributeNS(null, "id", s.getTitle());
     		
-            Element series_line = doc.createElementNS(svgNS, "line");
-            series_line.setAttributeNS(null, "x1", Integer.toString( s.getFirstYear()));
-            series_line.setAttributeNS(null, "y1", Integer.toString(i*spacing) );
-            series_line.setAttributeNS(null, "x2", Integer.toString( s.getLastYear() ));
-            series_line.setAttributeNS(null, "y2", Integer.toString(i*spacing));
-            series_line.setAttributeNS(null, "stroke", "black");
-            series_line.setAttributeNS(null, "stroke-width", "1");
+            Element line_group = doc.createElementNS(svgNS, "g");
+            // draw in the recording and non-recording lines
+            boolean[] recording_years = s.getRecordingYears();
+            if(recording_years.length != 0) {
+            	int begin_index = 0;
+            	boolean isRecording = recording_years[0];
+            	for(int j = 1; j < recording_years.length; j++) {
+            		if(isRecording != recording_years[j]) { //need to draw a line
+            			Element series_line = doc.createElementNS(svgNS, "line");
+                        series_line.setAttributeNS(null, "x1", Integer.toString( s.getFirstYear() + begin_index ));
+                        series_line.setAttributeNS(null, "y1", Integer.toString(i*spacing) );
+                        series_line.setAttributeNS(null, "x2", Integer.toString( s.getFirstYear() + j ));
+                        series_line.setAttributeNS(null, "y2", Integer.toString(i*spacing));
+                        series_line.setAttributeNS(null, "stroke", "black");
+                        series_line.setAttributeNS(null, "stroke-width", "1");
+                        if(!isRecording) { // make it a dashed line
+                        	series_line.setAttributeNS(null, "stroke-dasharray", "1,3");
+                        }
+                        line_group.appendChild(series_line);
+                        begin_index = j; 
+                        isRecording = recording_years[j];
+            		}
+            	}
+            }
+            series_group.appendChild(line_group);
             
             
+            // add series label
             Text series_name_text = doc.createTextNode(s.getTitle());
             Element series_name = doc.createElementNS(svgNS, "text");
             series_name.setAttributeNS(null, "x", Integer.toString( f.getLastYear() + 5));
@@ -95,9 +115,9 @@ public class FireChartSVG {
             series_name.setAttributeNS(null, "font-size", "8");
             //            series_name.setAttributeNS(null, "fill", "blue");
             series_name.appendChild(series_name_text);
-            
             series_group.appendChild(series_name);
-            series_group.appendChild(series_line);
+            
+            //series_group.appendChild(series_line);
             chronologyPlot.appendChild(series_group);	
     	}
         //    	chronologyPlot.setAttributeNS(null, "display", "none");
