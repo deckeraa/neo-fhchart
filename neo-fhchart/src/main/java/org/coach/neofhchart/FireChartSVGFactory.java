@@ -45,7 +45,7 @@ public class FireChartSVGFactory {
     
     private static Element getChronologyPlot(Document doc, String svgNS, AbstractFireHistoryReader f) {
     	Element chronologyPlot = doc.createElementNS(svgNS, "g");
-        chronologyPlot.setAttributeNS(null, "transform", "translate(-"+Integer.toString(f.getFirstYear())+",0)");
+        chronologyPlot.setAttributeNS(null, "transform", "translate(-"+Integer.toString(f.getFirstYear())+",20)");
         int spacing = 10;
          	
     	ArrayList<FHSeries> series_arr = f.getSeriesList();
@@ -62,6 +62,17 @@ public class FireChartSVGFactory {
             series_line.setAttributeNS(null, "stroke", "black");
             series_line.setAttributeNS(null, "stroke-width", "1");
             
+            
+            Text series_name_text = doc.createTextNode(s.getTitle());
+            Element series_name = doc.createElementNS(svgNS, "text");
+            series_name.setAttributeNS(null, "x", Integer.toString( f.getLastYear() + 5));
+            series_name.setAttributeNS(null, "y", Integer.toString(i*spacing) );
+            series_name.setAttributeNS(null, "font-family", "Verdana");
+            series_name.setAttributeNS(null, "font-size", "10");
+            series_name.setAttributeNS(null, "fill", "blue");
+            series_name.appendChild(series_name_text);
+            
+            series_group.appendChild(series_name);
             series_group.appendChild(series_line);
             chronologyPlot.appendChild(series_group);	
     	}
