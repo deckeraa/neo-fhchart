@@ -64,7 +64,9 @@ public class NeoFHChart
     JButton load_b = new JButton("Load SVG");
     JButton export_pdf_b = new JButton("Export PDF");
     JButton export_png_b = new JButton("Export PNG");
+    JButton hide_chron_b = new JButton("Hide Chron Plot");
     JSVGCanvas svgCanvas = new JSVGCanvas();
+    FireChartSVG chart;
 
     public NeoFHChart(JFrame f) {
         frame = f;
@@ -77,6 +79,7 @@ public class NeoFHChart
         p.add(load_b);
         p.add(export_pdf_b);
         p.add(export_png_b);
+        p.add(hide_chron_b);
 
         panel.add("North", p);
         panel.add("Center", svgCanvas);
@@ -85,8 +88,10 @@ public class NeoFHChart
         // It is only here to save keystrokes while testing
         File f = new File("./uscbe001.fhx");
         FHX2FileReader fr = new FHX2FileReader(f);
-        Document d = FireChartSVGFactory.buildSVGFromReader( fr );
-        FireChartSVGFactory.printDocument(d, System.out);
+        //        Document d = FireChartSVGFactory.buildSVGFromReader( fr );
+        //        FireChartSVGFactory.printDocument(d, System.out);
+        chart = new FireChartSVG(fr);
+        chart.print();
         svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
         svgCanvas.setEnableImageZoomInteractor(true);
         svgCanvas.setEnablePanInteractor(true);
@@ -99,7 +104,7 @@ public class NeoFHChart
             }
         });
         
-        svgCanvas.setDocument(d);
+        svgCanvas.setDocument(chart.doc);
 
         
         // Set the button action.
@@ -166,6 +171,13 @@ public class NeoFHChart
                         // TODO real exception handling
                     }
                     System.out.println("Done.");
+                }
+            });
+
+        hide_chron_b.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) {
+                    chart.toggleChronologyPlotVisibility();
+                    svgCanvas.invalidate();
                 }
             });
 
