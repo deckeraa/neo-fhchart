@@ -60,20 +60,21 @@ public class FireChartSVG {
     	doc = impl.createDocument(svgNS, "svg", null);
     	reader = f;
 
+    	// calculate plot dimensions
+    	int chronology_plot_height = f.getNumberOfSeries()*SERIES_SPACING + SERIES_HEIGHT;
+    	int total_height = chronology_plot_height;
+    	
         Element svgRoot = doc.getDocumentElement();
 
         svgRoot.setAttributeNS(null, "width", "100%");
-    	svgRoot.setAttributeNS(null, "height", "100%");
+    	svgRoot.setAttributeNS(null, "height", Integer.toString(total_height) + 50);
     	
     	// attach the rectangle to the svg root element
     	// svgRoot.appendChild( getRect(doc, svgNS, f) );
     	Element padding_grouper = doc.createElementNS(svgNS, "g");
+    	padding_grouper.setAttributeNS(null, "id", "padding_g");
     	padding_grouper.setAttributeNS(null, "transform", "translate (20,0)");
-    	svgRoot.appendChild(padding_grouper);
-    	
-    	// calculate plot dimensions
-    	int chronology_plot_height = f.getNumberOfSeries()*SERIES_SPACING + SERIES_HEIGHT;
-    	int total_height = chronology_plot_height;
+    	svgRoot.appendChild(padding_grouper);	
     	
     	// build time axis
     	Element time_axis_g = doc.createElementNS(svgNS, "g");
@@ -94,7 +95,7 @@ public class FireChartSVG {
     private static Element getTimeAxis(Document doc, String svgNS, AbstractFireHistoryReader f, int height) {
     	// time axis is centered off of the year 0 A.D.
     	Element timeAxis = doc.createElementNS(svgNS, "g");
-    	timeAxis.setAttributeNS(null, "transform", "translate("+ f.getFirstYear()+",0)");
+    	timeAxis.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
     	for(int i = f.getFirstYear(); i < f.getLastYear(); i++) {
     		if( i % 50 == 0) { // year is a multiple of 50
     			System.out.println("year: "+i);
@@ -104,14 +105,15 @@ public class FireChartSVG {
                         dash_line.setAttributeNS(null,"y1","0");
                         dash_line.setAttributeNS(null,"y2",Integer.toString(height));
                         dash_line.setAttributeNS(null,"stroke-width", "1");
-                        dash_line.setAttributeNS(null,"stoke-dasharray", "1,3");
-                        dash_line.setAttributeNS(null,"fill", "black");
+                        dash_line.setAttributeNS(null,"stroke-dasharray", "1,3");
+                        dash_line.setAttributeNS(null,"stroke", "grey");
                         timeAxis.appendChild(dash_line);
 
                         Element year_text_holder = doc.createElementNS(svgNS, "text");
                         Text year_text = doc.createTextNode(Integer.toString(i));
-                        year_text_holder.setAttributeNS(null, "x", Integer.toString(f.getLastYear() - f.getFirstYear() + 5));
-                        year_text_holder.setAttributeNS(null, "y", Integer.toString(i*SERIES_SPACING + SERIES_HEIGHT/2) );
+                        year_text_holder.setAttributeNS(null, "x", Integer.toString(i));
+                        year_text_holder.setAttributeNS(null, "y", Integer.toString((f.getNumberOfSeries()-f.getBadDataLineNumbers().size())*SERIES_SPACING + SERIES_HEIGHT/2) );
+                        //year_text_holder.setAttributeNS(null, "y", "40");
                         year_text_holder.setAttributeNS(null, "font-family", "Verdana");
                         year_text_holder.setAttributeNS(null, "font-size", "8");
                         year_text_holder.appendChild(year_text);

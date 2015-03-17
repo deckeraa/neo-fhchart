@@ -54,7 +54,7 @@ public class NeoFHChart
                     System.exit(0);
                 }
             });
-        f.setSize(800, 600);
+        f.setSize(800, 750);
         f.setVisible(true);
         System.out.println( "Hello World!" );
 
