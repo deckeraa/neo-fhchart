@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import org.w3c.dom.*;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.fhaes.enums.EventTypeToProcess;
+import org.fhaes.enums.FireFilterType;
 import org.fhaes.fhfilereader.*;
 
 import javax.xml.transform.*;
@@ -22,6 +24,14 @@ public class FireChartSVG {
         
     private static int SERIES_HEIGHT = 10;
     private static int SERIES_SPACING = 15;
+    private static int COMPOSITE_PLOT_HEIGHT = 30;
+    private static int INDEX_PLOT_HEIGHT = 50;
+    private static int PLOT_SPACING = 5;
+    private static int TIME_AXIS_HEIGHT = 10;
+    
+    private boolean isIndexPlotVisible = false;
+    private boolean isChronologyPlotVisible = true;
+    private boolean isCompositePlotVisible = true;
     
     public static void printDocument(Document doc, OutputStream out) {
         try {
@@ -61,8 +71,20 @@ public class FireChartSVG {
     	reader = f;
 
     	// calculate plot dimensions
+    	int cur_bottom = 0; // used for tracking where the bottom of the chart is as it is being built
+    	int index_plot_height = INDEX_PLOT_HEIGHT;
+    	if(isIndexPlotVisible) { cur_bottom += index_plot_height + PLOT_SPACING; }
+    	
+    	int chronology_plot_y = cur_bottom;
     	int chronology_plot_height = (f.getSeriesList().size())*SERIES_SPACING + SERIES_HEIGHT;
-    	int total_height = chronology_plot_height;
+    	if(isChronologyPlotVisible) {cur_bottom += chronology_plot_height + PLOT_SPACING; }
+    		
+    	int composite_plot_y = cur_bottom;
+    	int composite_plot_height = COMPOSITE_PLOT_HEIGHT;
+    	if(isCompositePlotVisible) { cur_bottom += composite_plot_height + PLOT_SPACING; }
+    	
+    	int total_height = cur_bottom;
+    	
     	
         Element svgRoot = doc.getDocumentElement();
 
@@ -85,12 +107,38 @@ public class FireChartSVG {
     	// build and position chronology plot
     	Element chrono_plot_g = doc.createElementNS(svgNS, "g");
     	chrono_plot_g.appendChild( getChronologyPlot(doc, svgNS, f) );
-    	chrono_plot_g.setAttributeNS(null, "transform", "translate(0,0)");
+    	chrono_plot_g.setAttributeNS(null, "transform", "translate(0,"+chronology_plot_y+")");
     	padding_grouper.appendChild( chrono_plot_g );
     	
-    	
+    	// build and position composite plot
+    	Element comp_plot_g = doc.createElementNS(svgNS, "g");
+    	comp_plot_g.setAttributeNS(null, "id", "comp_plot_g");
+    	comp_plot_g.setAttributeNS(null, "transform", "translate(0,"+composite_plot_y+")");
+    	comp_plot_g.appendChild( getCompositePlot(doc, svgNS, f, COMPOSITE_PLOT_HEIGHT, EventTypeToProcess.FIRE_EVENT, FireFilterType.NUMBER_OF_EVENTS, 0.5, 3));
+    	padding_grouper.appendChild( comp_plot_g );
 
     };
+    
+    private static Element getCompositePlot(Document doc, String svgNS, AbstractFireHistoryReader f, int height, 
+    										EventTypeToProcess eventsToProcess, FireFilterType filterType, double filterValue,
+    										int minNumberOfSamples) {
+    	// compositePlot is centered off of the year 0 A.D.
+    	Element composite_plot = doc.createElementNS(svgNS, "g");
+    	composite_plot.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
+    	ArrayList<Integer> composite_years = f.getCompositeFireYears( eventsToProcess, filterType,
+    																  filterValue, minNumberOfSamples);
+    	for( int i : composite_years) {
+    		Element event_line = doc.createElementNS(svgNS, "line");
+    		event_line.setAttributeNS(null,"x1",Integer.toString(i));
+            event_line.setAttributeNS(null,"x2",Integer.toString(i));
+            event_line.setAttributeNS(null,"y1","0");
+            event_line.setAttributeNS(null,"y2",Integer.toString(height));
+            event_line.setAttributeNS(null,"stroke-width", "1");
+            event_line.setAttributeNS(null,"stroke", "black");
+    		composite_plot.appendChild(event_line);
+    	}
+    	return composite_plot;
+    }
     
     private static Element getTimeAxis(Document doc, String svgNS, AbstractFireHistoryReader f, int height) {
     	// time axis is centered off of the year 0 A.D.
