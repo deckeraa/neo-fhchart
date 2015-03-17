@@ -1,0 +1,40 @@
+Peters Flat - USPET001
+Additional Site Information
+
+Henri D. Grissino-Mayer, Thomas W. Swetnam, and Christopher H. Baisan
+
+
+Dating Method: Crossdated
+
+Related ITRDB Chronology: az549.crn
+
+Sample Storage Location: Laboratory of Tree-Ring Research, University of 
+Arizona, Tucson, AZ. 
+
+Reference: Grissino-Mayer, H.D., Baisan, C.H., Swetnam, T.W. 1995. Fire history in the 
+Pinaleño Mountains of southeastern Arizona: Effects of human-related disturbances. In: 
+L.F. Debano, G.J. Gottfried, R.H. Hamre, C.B. Edminster, P.F. Ffolliott, and A. Ortega-
+Rubio, eds., Biodiversity and Management of the Madrean Archipelago: The Sky Islands of 
+Southwestern United States and Northwestern Mexico. USDA Forest Service General Technical 
+Report RM 264: 399-407.
+
+Abstract: We reconstructed the history of fire at two sites in the mixed-conifer forests 
+of the Pinaleno Mountains of southern Arizona from 90 fire- scarred living and dead 
+southwestern white pine (Pinus strobiformis) and ponderosa pine (Pinus ponderosa) trees. 
+We used dendroecological techniques to date nearly 2000 fire scars to their exact year of 
+formation, and obtained age structure information from over 600 increment cores and cross-
+sections collected from Engelmann spruce (Picea engelmannii) and corkbark fir (Abies 
+lasiocarpa). We compared the age structure data with the reconstruction of past fires to 
+determine which fires may have had an effect on the higher-elevation forests. During the 
+pre-settlement period (prior to 1880), low-intensity surface fires occurred once every 
+four to six years, based on the median probability interval derived using the Weibull 
+distribution. The age structure of the spruce-fir forest suggests that the forest 
+established after a stand-replacement fire that occurred in 1685, considered one of the 
+most widespread and intense of any reconstructed fire event. Fires had occurred 
+predominantly in the early portion of the growing season (May and June) similar to current 
+dominant season of fire activity. The cessation of episodic fires after 1893 can be 
+attributed to a combination of human-related disturbances, especially grazing and fire 
+exclusion. The absence of ecologically-significant fires during the last 100 years in the 
+Pinaleno Mountains should be considered when developing land and fire management plans for 
+this environmentally sensitive area. 
+

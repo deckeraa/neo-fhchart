@@ -86,7 +86,7 @@ public class NeoFHChart
 
         // TODO remove this code.
         // It is only here to save keystrokes while testing
-        File f = new File("./uscbe001.fhx");
+        File f = new File("./samples/uscbe001.fhx");
         FHX2FileReader fr = new FHX2FileReader(f);
         //        Document d = FireChartSVGFactory.buildSVGFromReader( fr );
         //        FireChartSVGFactory.printDocument(d, System.out);
@@ -108,28 +108,18 @@ public class NeoFHChart
         svgCanvas.setDocument(chart.doc);
 
         
-        // Set the button action.
+        // Brings up a file chooser dialog to select an input file
         load_b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				System.out.println("clicked");
-				// svgCanvas.setDocument( buildSVG() );
-
 				JFileChooser fc = new JFileChooser(".");
 				int choice = fc.showOpenDialog(panel);
 				if (choice == JFileChooser.APPROVE_OPTION) {
 					File f = fc.getSelectedFile(); 
-					
-					// TODO hard-coded for
-													// testing.
-					// File f = new File("./uscbe001.fhx");
-					//FHX2FileReader fr = new FHX2FileReader(f);
-					//Document d = FireChartSVGFactory.buildSVGFromReader(fr);
-					//svgCanvas.setDocument(d);
-					try {
-						svgCanvas.setURI(f.toURL().toString());
-					}catch (IOException e){
-						e.printStackTrace();
-					}
+					FHX2FileReader fr = new FHX2FileReader(f);
+			        chart = new FireChartSVG(fr);
+			        chart.print();
+			        chart.dumpDocument();
+					svgCanvas.setDocument(chart.doc);
 				}
 			}
             });

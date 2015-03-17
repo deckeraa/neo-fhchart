@@ -1,0 +1,100 @@
+Name of site   : Simulated FHX2 file from page 20 of user manual.
+Site code      : CER
+Collection date: 
+Collectors     : 
+Crossdaters    : 
+Number samples : 
+Species name   : 
+Common name    : 
+Habitat type   : 
+Country        : 
+State          : 
+County         : 
+Park/Monument  : 
+National Forest: 
+Ranger district: 
+Township       : 
+Range          : 
+Section        : 
+Quarter section: 
+UTM easting    : 
+UTM northing   : 
+Latitude       : 
+Longitude      : 
+Topographic map: 
+Lowest elev    : 
+Highest elev   : 
+Slope          : 
+Aspect         : 
+Area sampled   : 
+Substrate type : 
+Begin comments BELOW this line:
+End comments ABOVE this line.
+
+FHX2 FORMAT
+1812 7 5
+CCCCCCC
+EEEEEEE
+RRRRRRR
+0000001
+3457890
+
+.[..... 1812
+...{... 1813
+....... 1814
+....... 1815
+..[.... 1816
+......[ 1817
+{...... 1818
+....... 1819
+....... 1820
+.....[. 1821
+....... 1822
+....... 1823
+....... 1824
+.E.M... 1825
+.|.|... 1826
+.|.|... 1827
+.M.|..U 1828
+.|.|..| 1829
+.|.|..| 1830
+.EULEU| 1831
+.|||||| 1832
+.|||||| 1833
+.|||||| 1834
+.M|MM|| 1835
+.|||||| 1836
+.|||||| 1837
+D||LM|| 1838
+||||||| 1839
+||||||| 1840
+||U|||U 1841
+||||||| 1842
+||||||| 1843
+||||||| 1844
+||||||| 1845
+||||||| 1846
+||||||| 1847
+||||||| 1848
+||||||| 1849
+||||||| 1850
+EEMMEEE 1851
+||||||| 1852
+||||||| 1853
+||||||| 1854
+||||||| 1855
+||||||| 1856
+||||||| 1857
+||||||| 1858
+|U|||MU 1859
+||||||| 1860
+||||||| 1861
+||||||| 1862
+||||||| 1863
+|m||||| 1864
+||||||| 1865
+|LaLAAA 1866
+||||||| 1867
+||||||| 1868
+||||||| 1869
+}}}}}}} 1870
