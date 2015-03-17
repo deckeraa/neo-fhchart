@@ -21,7 +21,7 @@ public class FireChartSVG {
     private AbstractFireHistoryReader reader;
         
     private static int SERIES_HEIGHT = 10;
-    private static int SERIES_SPACING = 20;
+    private static int SERIES_SPACING = 15;
     
     public static void printDocument(Document doc, OutputStream out) {
         try {
@@ -112,8 +112,8 @@ public class FireChartSVG {
                         Element year_text_holder = doc.createElementNS(svgNS, "text");
                         Text year_text = doc.createTextNode(Integer.toString(i));
                         year_text_holder.setAttributeNS(null, "x", Integer.toString(i));
-                        year_text_holder.setAttributeNS(null, "y", Integer.toString((f.getNumberOfSeries()-f.getBadDataLineNumbers().size())*SERIES_SPACING + SERIES_HEIGHT/2) );
-                        //year_text_holder.setAttributeNS(null, "y", "40");
+                        //year_text_holder.setAttributeNS(null, "y", Integer.toString((f.getNumberOfSeries()-f.getBadDataLineNumbers().size())*SERIES_SPACING + SERIES_HEIGHT/2) );
+                        year_text_holder.setAttributeNS(null, "y", Integer.toString(height));
                         year_text_holder.setAttributeNS(null, "font-family", "Verdana");
                         year_text_holder.setAttributeNS(null, "font-size", "8");
                         year_text_holder.appendChild(year_text);
