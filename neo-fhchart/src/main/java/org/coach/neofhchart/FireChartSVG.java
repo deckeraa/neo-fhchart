@@ -15,11 +15,14 @@ import javax.xml.transform.stream.*;
 public class FireChartSVG {
     
     public Document doc;
+    
     private String svgNS;
     private DOMImplementation impl;
-    
+    private AbstractFireHistoryReader reader;
+        
     private static int SERIES_HEIGHT = 10;
-
+    private static int SERIES_SPACING = 20;
+    
     public static void printDocument(Document doc, OutputStream out) {
         try {
             TransformerFactory tf = TransformerFactory.newInstance();
@@ -47,10 +50,15 @@ public class FireChartSVG {
     	printDocument(doc, System.out);
     }
     
+    public String getName() {
+    	return reader.getName();
+    }
+    
     public FireChartSVG(AbstractFireHistoryReader f){
         impl = SVGDOMImplementation.getDOMImplementation();
     	svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
     	doc = impl.createDocument(svgNS, "svg", null);
+    	reader = f;
 
         Element svgRoot = doc.getDocumentElement();
 
@@ -62,9 +70,56 @@ public class FireChartSVG {
     	Element padding_grouper = doc.createElementNS(svgNS, "g");
     	padding_grouper.setAttributeNS(null, "transform", "translate (20,0)");
     	svgRoot.appendChild(padding_grouper);
-    	padding_grouper.appendChild( getChronologyPlot(doc, svgNS, f));
+    	
+    	// calculate plot dimensions
+    	int chronology_plot_height = f.getNumberOfSeries()*SERIES_SPACING + SERIES_HEIGHT;
+    	int total_height = chronology_plot_height;
+    	
+    	// build time axis
+    	Element time_axis_g = doc.createElementNS(svgNS, "g");
+    	time_axis_g.setAttributeNS(null, "id", "time_axis_g");
+    	time_axis_g.appendChild( getTimeAxis(doc, svgNS, f, total_height));
+    	padding_grouper.appendChild(time_axis_g);
+    	
+    	// build and position chronology plot
+    	Element chrono_plot_g = doc.createElementNS(svgNS, "g");
+    	chrono_plot_g.appendChild( getChronologyPlot(doc, svgNS, f) );
+    	chrono_plot_g.setAttributeNS(null, "transform", "translate(0,100)");
+    	padding_grouper.appendChild( chrono_plot_g );
+    	
+    	
 
     };
+    
+    private static Element getTimeAxis(Document doc, String svgNS, AbstractFireHistoryReader f, int height) {
+    	// time axis is centered off of the year 0 A.D.
+    	Element timeAxis = doc.createElementNS(svgNS, "g");
+    	timeAxis.setAttributeNS(null, "transform", "translate("+ f.getFirstYear()+",0)");
+    	for(int i = f.getFirstYear(); i < f.getLastYear(); i++) {
+    		if( i % 50 == 0) { // year is a multiple of 50
+    			System.out.println("year: "+i);
+    			Element dash_line = doc.createElementNS(svgNS, "line");
+                        dash_line.setAttributeNS(null,"x1",Integer.toString(i));
+                        dash_line.setAttributeNS(null,"x2",Integer.toString(i));
+                        dash_line.setAttributeNS(null,"y1","0");
+                        dash_line.setAttributeNS(null,"y2",Integer.toString(height));
+                        dash_line.setAttributeNS(null,"stroke-width", "1");
+                        dash_line.setAttributeNS(null,"stoke-dasharray", "1,3");
+                        dash_line.setAttributeNS(null,"fill", "black");
+                        timeAxis.appendChild(dash_line);
+
+                        Element year_text_holder = doc.createElementNS(svgNS, "text");
+                        Text year_text = doc.createTextNode(Integer.toString(i));
+                        year_text_holder.setAttributeNS(null, "x", Integer.toString(f.getLastYear() - f.getFirstYear() + 5));
+                        year_text_holder.setAttributeNS(null, "y", Integer.toString(i*SERIES_SPACING + SERIES_HEIGHT/2) );
+                        year_text_holder.setAttributeNS(null, "font-family", "Verdana");
+                        year_text_holder.setAttributeNS(null, "font-size", "8");
+                        year_text_holder.appendChild(year_text);
+                        timeAxis.appendChild(year_text_holder);
+    		}
+    	}
+    	return timeAxis;
+    }
 
     public void setChronologyPlotVisibility(boolean isVisible) {
     	Element plot_grouper = doc.getElementById("chronology_plot");
@@ -85,10 +140,7 @@ public class FireChartSVG {
         chronologyPlot.setAttributeNS(null, "id", "chronology_plot");
         chronologyPlot.setAttributeNS(null, "transform", "translate(0,20) scale(1.1)");
         chronologyPlot.setAttributeNS(null, "display", "inline");
-        //        chronologyPlot.setAttributeNS(null, "stroke", "black");
-        //        chronologyPlot.setAttributeNS(null, "stroke-width", "black");
-        int spacing = 20;
-         	
+                 	
         // build all of the series
     	ArrayList<FHSeries> series_arr = f.getSeriesList();
     	for(int i = 0; i < series_arr.size(); i++) {
@@ -97,13 +149,13 @@ public class FireChartSVG {
     		// add in the series group, which has the lines and ticks
             Element series_group = buildSingleSeries( doc, svgNS, s );
             int x_offset = s.getFirstYear() - f.getFirstYear();
-            series_group.setAttributeNS(null, "transform", "translate("+Integer.toString(x_offset)+","+Integer.toString(i*spacing)+")");
+            series_group.setAttributeNS(null, "transform", "translate("+Integer.toString(x_offset)+","+Integer.toString(i*SERIES_SPACING)+")");
             
             // add in the label for the series
             Text series_name_text = doc.createTextNode(s.getTitle());
             Element series_name = doc.createElementNS(svgNS, "text");
             series_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() - f.getFirstYear() + 5));
-            series_name.setAttributeNS(null, "y", Integer.toString(i*spacing + SERIES_HEIGHT/2) );
+            series_name.setAttributeNS(null, "y", Integer.toString(i*SERIES_SPACING + SERIES_HEIGHT/2) );
             series_name.setAttributeNS(null, "font-family", "Verdana");
             series_name.setAttributeNS(null, "font-size", "8");
             series_name.appendChild(series_name_text);

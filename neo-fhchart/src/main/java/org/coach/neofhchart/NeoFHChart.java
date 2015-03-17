@@ -129,9 +129,8 @@ public class NeoFHChart
 
                     System.out.println("Exporting to PDF....");
                     try{
-                        String svg_URI_input = Paths.get("SVG_logo.svg").toUri().toURL().toString();
-                        TranscoderInput input_svg_image = new TranscoderInput(svg_URI_input);        
-                        OutputStream pdf_ostream = new FileOutputStream("SVG_logo.pdf");
+                    	TranscoderInput input_svg_image = new TranscoderInput(chart.doc);
+                        OutputStream pdf_ostream = new FileOutputStream(chart.getName()+".pdf");
                         TranscoderOutput output_pdf_file = new TranscoderOutput(pdf_ostream);               
                         Transcoder transcoder = new PDFTranscoder();
                         transcoder.transcode(input_svg_image, output_pdf_file);
@@ -149,14 +148,13 @@ public class NeoFHChart
                 public void actionPerformed(ActionEvent ae) {
                     System.out.println("Exporting to PNG....");
                     try {
-                    PNGTranscoder t = new PNGTranscoder();
-                    String svg_URI_input = Paths.get("SVG_logo.svg").toUri().toURL().toString();
-                    TranscoderInput input = new TranscoderInput( svg_URI_input );
-                    OutputStream png_ostream = new FileOutputStream("SVG_logo.png");
-                    TranscoderOutput output = new TranscoderOutput(png_ostream);
-                    t.transcode(input, output);
-                    png_ostream.flush();
-                    png_ostream.close();
+                    	PNGTranscoder t = new PNGTranscoder();
+                    	TranscoderInput input = new TranscoderInput( chart.doc );
+                    	OutputStream png_ostream = new FileOutputStream(chart.getName()+".png");
+                    	TranscoderOutput output = new TranscoderOutput(png_ostream);
+                    	t.transcode(input, output);
+                    	png_ostream.flush();
+                    	png_ostream.close();
                     }
                     catch(Exception e){
                         // TODO real exception handling
