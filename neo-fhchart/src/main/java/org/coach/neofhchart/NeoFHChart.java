@@ -91,7 +91,7 @@ public class NeoFHChart
         //        Document d = FireChartSVGFactory.buildSVGFromReader( fr );
         //        FireChartSVGFactory.printDocument(d, System.out);
         chart = new FireChartSVG(fr);
-        chart.print();
+        //chart.print();
         chart.dumpDocument();
         svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
         svgCanvas.setEnableImageZoomInteractor(true);
@@ -117,7 +117,7 @@ public class NeoFHChart
 					File f = fc.getSelectedFile(); 
 					FHX2FileReader fr = new FHX2FileReader(f);
 			        chart = new FireChartSVG(fr);
-			        chart.print();
+			        //chart.print();
 			        chart.dumpDocument();
 					svgCanvas.setDocument(chart.doc);
 				}

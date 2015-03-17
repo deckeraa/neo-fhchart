@@ -61,7 +61,7 @@ public class FireChartSVG {
     	reader = f;
 
     	// calculate plot dimensions
-    	int chronology_plot_height = f.getNumberOfSeries()*SERIES_SPACING + SERIES_HEIGHT;
+    	int chronology_plot_height = (f.getSeriesList().size())*SERIES_SPACING + SERIES_HEIGHT;
     	int total_height = chronology_plot_height;
     	
         Element svgRoot = doc.getDocumentElement();
@@ -85,7 +85,7 @@ public class FireChartSVG {
     	// build and position chronology plot
     	Element chrono_plot_g = doc.createElementNS(svgNS, "g");
     	chrono_plot_g.appendChild( getChronologyPlot(doc, svgNS, f) );
-    	chrono_plot_g.setAttributeNS(null, "transform", "translate(0,100)");
+    	chrono_plot_g.setAttributeNS(null, "transform", "translate(0,0)");
     	padding_grouper.appendChild( chrono_plot_g );
     	
     	
@@ -112,7 +112,6 @@ public class FireChartSVG {
                         Element year_text_holder = doc.createElementNS(svgNS, "text");
                         Text year_text = doc.createTextNode(Integer.toString(i));
                         year_text_holder.setAttributeNS(null, "x", Integer.toString(i));
-                        //year_text_holder.setAttributeNS(null, "y", Integer.toString((f.getNumberOfSeries()-f.getBadDataLineNumbers().size())*SERIES_SPACING + SERIES_HEIGHT/2) );
                         year_text_holder.setAttributeNS(null, "y", Integer.toString(height));
                         year_text_holder.setAttributeNS(null, "font-family", "Verdana");
                         year_text_holder.setAttributeNS(null, "font-size", "8");
@@ -140,7 +139,7 @@ public class FireChartSVG {
     private static Element getChronologyPlot(Document doc, String svgNS, AbstractFireHistoryReader f) {
     	Element chronologyPlot = doc.createElementNS(svgNS, "g");
         chronologyPlot.setAttributeNS(null, "id", "chronology_plot");
-        chronologyPlot.setAttributeNS(null, "transform", "translate(0,20) scale(1.1)");
+        //chronologyPlot.setAttributeNS(null, "transform", "");
         chronologyPlot.setAttributeNS(null, "display", "inline");
                  	
         // build all of the series
