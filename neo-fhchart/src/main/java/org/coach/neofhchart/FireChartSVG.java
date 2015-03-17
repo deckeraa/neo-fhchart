@@ -83,7 +83,7 @@ public class FireChartSVG {
     	int composite_plot_height = COMPOSITE_PLOT_HEIGHT;
     	if(isCompositePlotVisible) { cur_bottom += composite_plot_height + PLOT_SPACING; }
     	
-    	int total_height = cur_bottom;
+    	int total_height = cur_bottom + PLOT_SPACING;
     	
     	
         Element svgRoot = doc.getDocumentElement();
@@ -137,6 +137,18 @@ public class FireChartSVG {
             event_line.setAttributeNS(null,"stroke", "black");
     		composite_plot.appendChild(event_line);
     	}
+    	
+    	// draw a rectangle around it
+    	Element comp_rect = doc.createElementNS(svgNS, "rect");
+    	comp_rect.setAttributeNS(null, "x", Integer.toString(f.getFirstYear()));
+    	comp_rect.setAttributeNS(null, "y", "0" );
+    	comp_rect.setAttributeNS(null, "width", Integer.toString(f.getLastYear()-f.getFirstYear()));
+    	comp_rect.setAttributeNS(null, "height", Integer.toString(height));
+    	comp_rect.setAttributeNS(null, "fill", "none");
+    	comp_rect.setAttributeNS(null, "stroke", "black");
+    	comp_rect.setAttributeNS(null, "stroke-width", "1");
+    	composite_plot.appendChild(comp_rect);
+    	
     	return composite_plot;
     }
     
