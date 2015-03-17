@@ -192,11 +192,31 @@ public class FireChartSVG {
         }
         else {
         	Element no_pith_marker = doc.createElementNS(svgNS, "polygon");
-        	no_pith_marker.setAttributeNS(null, "points", "-2,1 5,-5 2,1");
+        	no_pith_marker.setAttributeNS(null, "points", "-2,0.5 5,-5 2,0.5");
         	no_pith_marker.setAttributeNS(null, "fill", "black");
         	series_group.appendChild(no_pith_marker);
         }
         
+        // add in out year bark marker
+        Element bark_marker_g = doc.createElementNS(svgNS, "g");
+        bark_marker_g.setAttributeNS(null, "transform", "translate("+Integer.toString(s.getLastYear()-s.getFirstYear()) +",0) scale(-1,1)");
+        if( s.hasBark() ){
+        	Element bark_marker = doc.createElementNS(svgNS, "rect");
+        	int height = 5;
+        	bark_marker.setAttributeNS(null, "x", "0"); // inner year
+        	bark_marker.setAttributeNS(null, "y", Integer.toString(-height/2));
+        	bark_marker.setAttributeNS(null, "width", "1");
+        	bark_marker.setAttributeNS(null, "height", Integer.toString(height));
+        	bark_marker.setAttributeNS(null, "fill", "black");
+        	bark_marker_g.appendChild(bark_marker);
+        }
+        else {
+        	Element no_bark_marker= doc.createElementNS(svgNS, "polygon");
+        	no_bark_marker.setAttributeNS(null, "points", "-2,0.5 5,-5 2,0.5");
+        	no_bark_marker.setAttributeNS(null, "fill", "black");
+        	bark_marker_g.appendChild(no_bark_marker);
+        }
+        series_group.appendChild(bark_marker_g);
         
         return series_group;
     }
