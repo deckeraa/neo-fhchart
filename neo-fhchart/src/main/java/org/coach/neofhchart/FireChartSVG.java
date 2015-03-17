@@ -28,6 +28,7 @@ public class FireChartSVG {
     private static int INDEX_PLOT_HEIGHT = 50;
     private static int PLOT_SPACING = 5;
     private static int TIME_AXIS_HEIGHT = 10;
+    private static int LABEL_X_OFFSET = 5; // how far the label is over from the plot ... in years (TODO)
     
     private boolean isIndexPlotVisible = false;
     private boolean isChronologyPlotVisible = true;
@@ -149,6 +150,17 @@ public class FireChartSVG {
     	comp_rect.setAttributeNS(null, "stroke-width", "1");
     	composite_plot.appendChild(comp_rect);
     	
+    	// add the label
+    	Text composite_name_text= doc.createTextNode("Composite");
+    	int font_size = 10;
+        Element composite_name= doc.createElementNS(svgNS, "text");
+        composite_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() + LABEL_X_OFFSET));
+        composite_name.setAttributeNS(null, "y", Integer.toString(height/2 + font_size/2));
+        composite_name.setAttributeNS(null, "font-family", "Verdana");
+        composite_name.setAttributeNS(null, "font-size", Integer.toString(font_size));
+        composite_name.appendChild(composite_name_text);
+        composite_plot.appendChild(composite_name);
+    	
     	return composite_plot;
     }
     
@@ -215,7 +227,7 @@ public class FireChartSVG {
             // add in the label for the series
             Text series_name_text = doc.createTextNode(s.getTitle());
             Element series_name = doc.createElementNS(svgNS, "text");
-            series_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() - f.getFirstYear() + 5));
+            series_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() - f.getFirstYear() + LABEL_X_OFFSET));
             series_name.setAttributeNS(null, "y", Integer.toString(i*SERIES_SPACING + SERIES_HEIGHT/2) );
             series_name.setAttributeNS(null, "font-family", "Verdana");
             series_name.setAttributeNS(null, "font-size", "8");
