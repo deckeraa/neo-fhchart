@@ -1,5 +1,16 @@
 package org.coach.neofhchart;
 
+/*************************************************************************
+ * NeoFHChart
+ * This class creates fire history charts using the 
+ * AbstractFireHistoryReader in FHUtil.
+ * Graphing is done by having FireChartSVG generate an SVG,
+ * represented as a org.w3c.dom.Document.
+ * The Batik library has an Apache v2.0 license, which is compatible with
+ * GPLv3 (https://www.apache.org/licenses/GPL-compatibility.html).
+ * @author Aaron Decker
+ ************************************************************************/
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -23,16 +34,6 @@ import java.nio.file.Path;
 import org.apache.fop.svg.PDFTranscoder;
 
 // XML imports
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
- 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,6 +45,7 @@ import org.fhaes.fhfilereader.*;
 
 public class NeoFHChart 
 {
+    // TODO EF3: This needs to be reimplemented as a "JPanel that can be incorporated into other interfaces".
     public static void main( String[] args )
     {
         JFrame f = new JFrame("NeoFHChart");
@@ -121,11 +123,10 @@ public class NeoFHChart
         // It is only here to save keystrokes while testing
         File f = new File("./samples/uscbe001.fhx");
         FHX2FileReader fr = new FHX2FileReader(f);
-        //        Document d = FireChartSVGFactory.buildSVGFromReader( fr );
-        //        FireChartSVGFactory.printDocument(d, System.out);
         chart = new FireChartSVG(fr);
         //chart.print();
         chart.dumpDocument();
+
         svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
         svgCanvas.setEnableImageZoomInteractor(true);
         svgCanvas.setEnablePanInteractor(true);
@@ -157,6 +158,8 @@ public class NeoFHChart
 			}
             });
 
+	// PDF Export
+	// TODO EF5: The pdf export does not currently export the entire document.
         export_pdf_b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
 
@@ -177,6 +180,8 @@ public class NeoFHChart
                 }
             });
 
+	// PNG Export
+	// TODO EF5: The png export does not currently work at all
         export_png_b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     System.out.println("Exporting to PNG....");
@@ -196,10 +201,11 @@ public class NeoFHChart
                 }
             });
 
+	// toggle button for showing/hiding the chronology plot
         hide_chron_b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     chart.toggleChronologyPlotVisibility();
-                    svgCanvas.invalidate();
+                    svgCanvas.invalidate(); // TODO this doesn't seem to cause a redraw
                 }
             });
 

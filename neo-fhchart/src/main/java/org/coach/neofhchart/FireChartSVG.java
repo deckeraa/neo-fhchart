@@ -1,5 +1,11 @@
 package org.coach.neofhchart;
 
+/****************************************************************************
+ * FireChartSVG
+ * Graphs a fire history chart as an svg using 
+ * FHUtil's AbstractFireHistoryReader
+ ***************************************************************************/
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -115,19 +121,16 @@ public class FireChartSVG {
     	Element comp_plot_g = doc.createElementNS(svgNS, "g");
     	comp_plot_g.setAttributeNS(null, "id", "comp_plot_g");
     	comp_plot_g.setAttributeNS(null, "transform", "translate(0,"+composite_plot_y+")");
-    	comp_plot_g.appendChild( getCompositePlot(doc, svgNS, f, COMPOSITE_PLOT_HEIGHT, EventTypeToProcess.FIRE_EVENT, FireFilterType.NUMBER_OF_EVENTS, 0.5, 3));
+    	comp_plot_g.appendChild( getCompositePlot(f, COMPOSITE_PLOT_HEIGHT, EventTypeToProcess.FIRE_EVENT, FireFilterType.NUMBER_OF_EVENTS, 0.5, 3));
     	padding_grouper.appendChild( comp_plot_g );
 
     };
     
-    private static Element getCompositePlot(Document doc, String svgNS, AbstractFireHistoryReader f, int height, 
-    										EventTypeToProcess eventsToProcess, FireFilterType filterType, double filterValue,
-    										int minNumberOfSamples) {
+    private Element getCompositePlot(AbstractFireHistoryReader f, int height, EventTypeToProcess eventsToProcess, FireFilterType filterType, double filterValue, int minNumberOfSamples) {
     	// compositePlot is centered off of the year 0 A.D.
     	Element composite_plot = doc.createElementNS(svgNS, "g");
     	composite_plot.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
-    	ArrayList<Integer> composite_years = f.getCompositeFireYears( eventsToProcess, filterType,
-    																  filterValue, minNumberOfSamples);
+    	ArrayList<Integer> composite_years = f.getCompositeFireYears( eventsToProcess, filterType,filterValue, minNumberOfSamples);
     	for( int i : composite_years) {
     		Element event_line = doc.createElementNS(svgNS, "line");
     		event_line.setAttributeNS(null,"x1",Integer.toString(i));
