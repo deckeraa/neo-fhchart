@@ -128,48 +128,7 @@ public class FireChartSVG {
 
     };
     
-    private Element getCompositePlot(AbstractFireHistoryReader f, int height, EventTypeToProcess eventsToProcess, FireFilterType filterType, double filterValue, int minNumberOfSamples) {
-    	// compositePlot is centered off of the year 0 A.D.
-    	Element composite_plot = doc.createElementNS(svgNS, "g");
-    	composite_plot.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
-    	
-    	// draw the vertical lines for fire years
-    	ArrayList<Integer> composite_years = f.getCompositeFireYears( eventsToProcess, filterType,filterValue, minNumberOfSamples);
-    	for( int i : composite_years) {
-    		Element event_line = doc.createElementNS(svgNS, "line");
-    		event_line.setAttributeNS(null,"x1",Integer.toString(i));
-            event_line.setAttributeNS(null,"x2",Integer.toString(i));
-            event_line.setAttributeNS(null,"y1","0");
-            event_line.setAttributeNS(null,"y2",Integer.toString(height));
-            event_line.setAttributeNS(null,"stroke-width", "1");
-            event_line.setAttributeNS(null,"stroke", "black");
-    		composite_plot.appendChild(event_line);
-    	}
-    	
-    	// draw a rectangle around it
-    	Element comp_rect = doc.createElementNS(svgNS, "rect");
-    	comp_rect.setAttributeNS(null, "x", Integer.toString(f.getFirstYear()));
-    	comp_rect.setAttributeNS(null, "y", "0" );
-    	comp_rect.setAttributeNS(null, "width", Integer.toString(f.getLastYear()-f.getFirstYear()));
-    	comp_rect.setAttributeNS(null, "height", Integer.toString(height));
-    	comp_rect.setAttributeNS(null, "fill", "none");
-    	comp_rect.setAttributeNS(null, "stroke", "black");
-    	comp_rect.setAttributeNS(null, "stroke-width", "1");
-    	composite_plot.appendChild(comp_rect);
-    	
-    	// add the label
-    	Text composite_name_text= doc.createTextNode("Composite");
-    	int font_size = 10;
-        Element composite_name= doc.createElementNS(svgNS, "text");
-        composite_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() + LABEL_X_OFFSET));
-        composite_name.setAttributeNS(null, "y", Integer.toString(height/2 + font_size/2));
-        composite_name.setAttributeNS(null, "font-family", "Verdana");
-        composite_name.setAttributeNS(null, "font-size", Integer.toString(font_size));
-        composite_name.appendChild(composite_name_text);
-        composite_plot.appendChild(composite_name);
-    	
-    	return composite_plot;
-    }
+    // ============ Time Axis ===========
     
     // getTimeAxis
     // currently puts a tick line and a label every 50 years
@@ -203,6 +162,7 @@ public class FireChartSVG {
     	return timeAxis;
     }
 
+    // ============ Chronology Plot ============
     
     public void setChronologyPlotVisibility(boolean isVisible) {
     	Element plot_grouper = doc.getElementById("chronology_plot");
@@ -354,6 +314,51 @@ public class FireChartSVG {
         series_group.appendChild(bark_marker_g);
         
         return series_group;
+    }
+    
+    // ========== Composite Plot ==========
+    
+    private Element getCompositePlot(AbstractFireHistoryReader f, int height, EventTypeToProcess eventsToProcess, FireFilterType filterType, double filterValue, int minNumberOfSamples) {
+    	// compositePlot is centered off of the year 0 A.D.
+    	Element composite_plot = doc.createElementNS(svgNS, "g");
+    	composite_plot.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
+    	
+    	// draw the vertical lines for fire years
+    	ArrayList<Integer> composite_years = f.getCompositeFireYears( eventsToProcess, filterType,filterValue, minNumberOfSamples);
+    	for( int i : composite_years) {
+    		Element event_line = doc.createElementNS(svgNS, "line");
+    		event_line.setAttributeNS(null,"x1",Integer.toString(i));
+            event_line.setAttributeNS(null,"x2",Integer.toString(i));
+            event_line.setAttributeNS(null,"y1","0");
+            event_line.setAttributeNS(null,"y2",Integer.toString(height));
+            event_line.setAttributeNS(null,"stroke-width", "1");
+            event_line.setAttributeNS(null,"stroke", "black");
+    		composite_plot.appendChild(event_line);
+    	}
+    	
+    	// draw a rectangle around it
+    	Element comp_rect = doc.createElementNS(svgNS, "rect");
+    	comp_rect.setAttributeNS(null, "x", Integer.toString(f.getFirstYear()));
+    	comp_rect.setAttributeNS(null, "y", "0" );
+    	comp_rect.setAttributeNS(null, "width", Integer.toString(f.getLastYear()-f.getFirstYear()));
+    	comp_rect.setAttributeNS(null, "height", Integer.toString(height));
+    	comp_rect.setAttributeNS(null, "fill", "none");
+    	comp_rect.setAttributeNS(null, "stroke", "black");
+    	comp_rect.setAttributeNS(null, "stroke-width", "1");
+    	composite_plot.appendChild(comp_rect);
+    	
+    	// add the label
+    	Text composite_name_text= doc.createTextNode("Composite");
+    	int font_size = 10;
+        Element composite_name= doc.createElementNS(svgNS, "text");
+        composite_name.setAttributeNS(null, "x", Integer.toString(f.getLastYear() + LABEL_X_OFFSET));
+        composite_name.setAttributeNS(null, "y", Integer.toString(height/2 + font_size/2));
+        composite_name.setAttributeNS(null, "font-family", "Verdana");
+        composite_name.setAttributeNS(null, "font-size", Integer.toString(font_size));
+        composite_name.appendChild(composite_name_text);
+        composite_plot.appendChild(composite_name);
+    	
+    	return composite_plot;
     }
 
 }

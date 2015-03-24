@@ -74,7 +74,7 @@ public class NeoFHChart
         frame = f;
     }
 
-    public ButtonGroup createCompositePlotOptions() {
+    public ButtonGroup createCompositePlotOptions(JPanel p) {
     	ActionListener refresh = new ActionListener() { 
         	public void actionPerformed(ActionEvent e) {
         		if( e.getActionCommand() == "FIRE" ) {
@@ -98,7 +98,9 @@ public class NeoFHChart
         composite_group.add(injuryOnlyEvents);
         composite_group.add(fireAndInjuryEvents);
         
-        
+        p.add(fireOnlyEvents);
+        p.add(injuryOnlyEvents);
+        p.add(fireAndInjuryEvents);
         
         
         return composite_group;
@@ -108,16 +110,19 @@ public class NeoFHChart
         final JPanel panel = new JPanel(new BorderLayout());
 
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        
-        ButtonGroup composite_group = createCompositePlotOptions();
+
+        JPanel composite_panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ButtonGroup composite_group = createCompositePlotOptions(composite_panel);
         
         p.add(load_b);
         p.add(export_pdf_b);
         p.add(export_png_b);
         p.add(hide_chron_b);
-
+        p.add(composite_panel);
+        
         panel.add("North", p);
         panel.add("Center", svgCanvas);
+//        panel.add("South", composite_group);
 
         // TODO remove this code.
         // It is only here to save keystrokes while testing
