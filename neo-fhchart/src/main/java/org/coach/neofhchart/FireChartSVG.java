@@ -41,6 +41,8 @@ public class FireChartSVG {
     private boolean isChronologyPlotVisible = true;
     private boolean isCompositePlotVisible = true;
     
+    private int num_series; // cached due to slowness of AbstractFireHistoryReader
+    
     public static void printDocument(Document doc, OutputStream out) {
         try {
             TransformerFactory tf = TransformerFactory.newInstance();
@@ -78,28 +80,11 @@ public class FireChartSVG {
     	svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
     	doc = impl.createDocument(svgNS, "svg", null);
     	reader = f;
+    	
+    	num_series = f.getSeriesList().size();
 
-    	// calculate plot dimensions
-    	/*int cur_bottom = 0; // used for tracking where the bottom of the chart is as it is being built
-    	int index_plot_height = INDEX_PLOT_HEIGHT;
-    	if(isIndexPlotVisible) { cur_bottom += index_plot_height + PLOT_SPACING; }
-    	
-    	int chronology_plot_y = cur_bottom;
-    	int chronology_plot_height = (f.getSeriesList().size())*SERIES_SPACING + SERIES_HEIGHT;
-    	if(isChronologyPlotVisible) {cur_bottom += chronology_plot_height + PLOT_SPACING; }
-    		
-    	int composite_plot_y = cur_bottom;
-    	int composite_plot_height = COMPOSITE_PLOT_HEIGHT;
-    	if(isCompositePlotVisible) { cur_bottom += composite_plot_height + PLOT_SPACING; }
-    	
-    	int total_height = cur_bottom + PLOT_SPACING;*/
-    	
-    	
-        Element svgRoot = doc.getDocumentElement();
-
-        // svgRoot.setAttributeNS(null, "width", "100%");
-    	// svgRoot.setAttributeNS(null, "height", Integer.toString(total_height) + 50);
-    	
+    	Element svgRoot = doc.getDocumentElement();
+            	
     	// attach the rectangle to the svg root element
     	// svgRoot.appendChild( getRect(doc, svgNS, f) );
     	Element padding_grouper = doc.createElementNS(svgNS, "g");
@@ -123,20 +108,20 @@ public class FireChartSVG {
     	comp_plot_g.appendChild( getCompositePlot(f, COMPOSITE_PLOT_HEIGHT, EventTypeToProcess.FIRE_EVENT, FireFilterType.NUMBER_OF_EVENTS, 0.5, 3));
     	padding_grouper.appendChild( comp_plot_g );
 
-    	positionChartGroupersAndDrawTimeAxis(f);
+    	positionChartGroupersAndDrawTimeAxis();
     };
     
     // Positions the various parts of the fire chart.
     // This method also re-creates the time axis since it is dependent on the total height of the svg,
     // due to the dashed tick lines that run vertically to denote years.
-    private void positionChartGroupersAndDrawTimeAxis(AbstractFireHistoryReader f){
+    private void positionChartGroupersAndDrawTimeAxis(){
     	// calculate plot dimensions
     	int cur_bottom = 0; // used for tracking where the bottom of the chart is as it is being built
     	int index_plot_height = INDEX_PLOT_HEIGHT;
     	if(isIndexPlotVisible) { cur_bottom += index_plot_height + PLOT_SPACING; }
     	
     	int chronology_plot_y = cur_bottom;
-    	int chronology_plot_height = (f.getSeriesList().size())*SERIES_SPACING + SERIES_HEIGHT;
+    	int chronology_plot_height = num_series*SERIES_SPACING + SERIES_HEIGHT;
     	if(isChronologyPlotVisible) {cur_bottom += chronology_plot_height + PLOT_SPACING; }
     		
     	int composite_plot_y = cur_bottom;
@@ -153,8 +138,11 @@ public class FireChartSVG {
     	
     	// build time axis
     	Element time_axis_g = doc.getElementById("time_axis_g");
-    	// TODO delete previous children
-    	time_axis_g.appendChild( getTimeAxis(f, total_height));
+    	NodeList n = time_axis_g.getChildNodes(); // because getChildNodes doesn't return a seq
+    	for(int i = 0; i < n.getLength(); i ++){ // no, instead we get a non-iterable custom data-structure :(
+    		time_axis_g.removeChild( n.item(i) );
+    	}
+    	time_axis_g.appendChild( getTimeAxis(reader, total_height));
     	    	
     	// set the translations for the chart groupers
     	Element chrono_plot_g = doc.getElementById("chrono_plot_g");
@@ -174,7 +162,6 @@ public class FireChartSVG {
     	timeAxis.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
     	for(int i = f.getFirstYear(); i < f.getLastYear(); i++) {
     		if( i % 50 == 0) { // year is a multiple of 50
-    			System.out.println("year: "+i);
     			Element dash_line = doc.createElementNS(svgNS, "line");
                         dash_line.setAttributeNS(null,"x1",Integer.toString(i));
                         dash_line.setAttributeNS(null,"x2",Integer.toString(i));
@@ -212,6 +199,8 @@ public class FireChartSVG {
     public void toggleChronologyPlotVisibility() {
     	Element plot_grouper = doc.getElementById("chronology_plot");
     	setChronologyPlotVisibility(plot_grouper.getAttributeNS(null, "display") == "none");
+    	
+    	positionChartGroupersAndDrawTimeAxis();
     }
     
     private Element getChronologyPlot( AbstractFireHistoryReader f) {
