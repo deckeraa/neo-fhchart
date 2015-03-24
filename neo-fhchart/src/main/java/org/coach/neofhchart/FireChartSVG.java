@@ -4,6 +4,7 @@ package org.coach.neofhchart;
  * FireChartSVG
  * Graphs a fire history chart as an svg using 
  * FHUtil's AbstractFireHistoryReader
+ * @author Aaron Decker
  ***************************************************************************/
 
 import java.io.*;
@@ -52,6 +53,7 @@ public class FireChartSVG {
         }
     }
     
+    // dumps the svg doc to a file
     public void dumpDocument() {
     	try {
     		File f = new File("FireChartSVG_dump.svg");
@@ -108,12 +110,12 @@ public class FireChartSVG {
     	// build time axis
     	Element time_axis_g = doc.createElementNS(svgNS, "g");
     	time_axis_g.setAttributeNS(null, "id", "time_axis_g");
-    	time_axis_g.appendChild( getTimeAxis(doc, svgNS, f, total_height));
+    	time_axis_g.appendChild( getTimeAxis(f, total_height));
     	padding_grouper.appendChild(time_axis_g);
     	
     	// build and position chronology plot
     	Element chrono_plot_g = doc.createElementNS(svgNS, "g");
-    	chrono_plot_g.appendChild( getChronologyPlot(doc, svgNS, f) );
+    	chrono_plot_g.appendChild( getChronologyPlot(f) );
     	chrono_plot_g.setAttributeNS(null, "transform", "translate(0,"+chronology_plot_y+")");
     	padding_grouper.appendChild( chrono_plot_g );
     	
@@ -130,6 +132,8 @@ public class FireChartSVG {
     	// compositePlot is centered off of the year 0 A.D.
     	Element composite_plot = doc.createElementNS(svgNS, "g");
     	composite_plot.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
+    	
+    	// draw the vertical lines for fire years
     	ArrayList<Integer> composite_years = f.getCompositeFireYears( eventsToProcess, filterType,filterValue, minNumberOfSamples);
     	for( int i : composite_years) {
     		Element event_line = doc.createElementNS(svgNS, "line");
@@ -167,7 +171,9 @@ public class FireChartSVG {
     	return composite_plot;
     }
     
-    private static Element getTimeAxis(Document doc, String svgNS, AbstractFireHistoryReader f, int height) {
+    // getTimeAxis
+    // currently puts a tick line and a label every 50 years
+    private Element getTimeAxis(AbstractFireHistoryReader f, int height) {
     	// time axis is centered off of the year 0 A.D.
     	Element timeAxis = doc.createElementNS(svgNS, "g");
     	timeAxis.setAttributeNS(null, "transform", "translate(-"+ f.getFirstYear()+",0)");
@@ -197,6 +203,7 @@ public class FireChartSVG {
     	return timeAxis;
     }
 
+    
     public void setChronologyPlotVisibility(boolean isVisible) {
     	Element plot_grouper = doc.getElementById("chronology_plot");
     	if( !isVisible ) {
@@ -211,7 +218,7 @@ public class FireChartSVG {
     	setChronologyPlotVisibility(plot_grouper.getAttributeNS(null, "display") == "none");
     }
     
-    private static Element getChronologyPlot(Document doc, String svgNS, AbstractFireHistoryReader f) {
+    private Element getChronologyPlot( AbstractFireHistoryReader f) {
     	Element chronologyPlot = doc.createElementNS(svgNS, "g");
         chronologyPlot.setAttributeNS(null, "id", "chronology_plot");
         //chronologyPlot.setAttributeNS(null, "transform", "");
@@ -223,7 +230,7 @@ public class FireChartSVG {
             
     		FHSeries s = series_arr.get(i);
     		// add in the series group, which has the lines and ticks
-            Element series_group = buildSingleSeries( doc, svgNS, s );
+            Element series_group = buildSingleSeries( s );
             int x_offset = s.getFirstYear() - f.getFirstYear();
             series_group.setAttributeNS(null, "transform", "translate("+Integer.toString(x_offset)+","+Integer.toString(i*SERIES_SPACING)+")");
             
@@ -239,11 +246,11 @@ public class FireChartSVG {
             chronologyPlot.appendChild(series_name);
             chronologyPlot.appendChild(series_group);	
     	}
-        //    	chronologyPlot.setAttributeNS(null, "display", "none");
+    
     	return chronologyPlot;
     }
     
-    private static Element buildSingleSeries(Document doc, String svgNS, FHSeries s) {
+    private Element buildSingleSeries(FHSeries s) {
     	Element series_group= doc.createElementNS(svgNS, "g");
     	series_group.setAttributeNS(null, "id", s.getTitle());
 		
@@ -294,18 +301,18 @@ public class FireChartSVG {
         boolean[] injury_years = s.getInjuryYears();
         for(int j = 0; j < injury_years.length; j++) {
         	if( injury_years[j] ) {
-        		Element fire_event = doc.createElementNS(svgNS, "rect");
+        		Element injury_event = doc.createElementNS(svgNS, "rect");
         		int width = 3;
-        		fire_event.setAttributeNS(null, "x", Integer.toString(j- width/2));
-            	fire_event.setAttributeNS(null, "y", Integer.toString(-SERIES_HEIGHT/2) );
-            	fire_event.setAttributeNS(null, "width", Integer.toString(width));
-            	fire_event.setAttributeNS(null, "height", Integer.toString(SERIES_HEIGHT));
-            	fire_event.setAttributeNS(null, "fill", "none");
-            	fire_event.setAttributeNS(null, "stroke", "black");
-            	series_fire_events.appendChild(fire_event);
+        		injury_event.setAttributeNS(null, "x", Integer.toString(j- width/2));
+            	injury_event.setAttributeNS(null, "y", Integer.toString(-SERIES_HEIGHT/2) );
+            	injury_event.setAttributeNS(null, "width", Integer.toString(width));
+            	injury_event.setAttributeNS(null, "height", Integer.toString(SERIES_HEIGHT));
+            	injury_event.setAttributeNS(null, "fill", "none");
+            	injury_event.setAttributeNS(null, "stroke", "black");
+            	series_injury_events.appendChild(injury_event);
         	}
         }
-        series_group.appendChild(series_fire_events);
+        series_group.appendChild(series_injury_events);
         
         // add in inner year pith marker
         if( s.hasPith() ){
