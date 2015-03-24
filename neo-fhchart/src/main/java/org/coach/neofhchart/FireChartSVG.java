@@ -191,9 +191,11 @@ public class FireChartSVG {
     	Element plot_grouper = doc.getElementById("chronology_plot");
     	if( !isVisible ) {
     		plot_grouper.setAttributeNS(null, "display", "none");
+    		isChronologyPlotVisible=false;
     	}
     	else {
     		plot_grouper.setAttributeNS(null, "display", "inline");
+    		isChronologyPlotVisible=true;
     	}
     }
     public void toggleChronologyPlotVisibility() {
