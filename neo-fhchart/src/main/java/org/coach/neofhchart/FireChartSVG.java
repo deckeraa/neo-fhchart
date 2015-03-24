@@ -80,6 +80,57 @@ public class FireChartSVG {
     	reader = f;
 
     	// calculate plot dimensions
+    	/*int cur_bottom = 0; // used for tracking where the bottom of the chart is as it is being built
+    	int index_plot_height = INDEX_PLOT_HEIGHT;
+    	if(isIndexPlotVisible) { cur_bottom += index_plot_height + PLOT_SPACING; }
+    	
+    	int chronology_plot_y = cur_bottom;
+    	int chronology_plot_height = (f.getSeriesList().size())*SERIES_SPACING + SERIES_HEIGHT;
+    	if(isChronologyPlotVisible) {cur_bottom += chronology_plot_height + PLOT_SPACING; }
+    		
+    	int composite_plot_y = cur_bottom;
+    	int composite_plot_height = COMPOSITE_PLOT_HEIGHT;
+    	if(isCompositePlotVisible) { cur_bottom += composite_plot_height + PLOT_SPACING; }
+    	
+    	int total_height = cur_bottom + PLOT_SPACING;*/
+    	
+    	
+        Element svgRoot = doc.getDocumentElement();
+
+        // svgRoot.setAttributeNS(null, "width", "100%");
+    	// svgRoot.setAttributeNS(null, "height", Integer.toString(total_height) + 50);
+    	
+    	// attach the rectangle to the svg root element
+    	// svgRoot.appendChild( getRect(doc, svgNS, f) );
+    	Element padding_grouper = doc.createElementNS(svgNS, "g");
+    	padding_grouper.setAttributeNS(null, "id", "padding_g");
+    	padding_grouper.setAttributeNS(null, "transform", "translate (20,20)");
+    	svgRoot.appendChild(padding_grouper);	
+    	
+    	Element time_axis_g = doc.createElementNS(svgNS, "g");
+    	time_axis_g.setAttributeNS(null, "id", "time_axis_g");
+    	padding_grouper.appendChild(time_axis_g);
+    	
+    	// build chronology plot
+    	Element chrono_plot_g = doc.createElementNS(svgNS, "g");
+    	chrono_plot_g.setAttributeNS(null, "id", "chrono_plot_g");
+    	chrono_plot_g.appendChild( getChronologyPlot(f) );
+    	padding_grouper.appendChild( chrono_plot_g );
+    	
+    	// build composite plot
+    	Element comp_plot_g = doc.createElementNS(svgNS, "g");
+    	comp_plot_g.setAttributeNS(null, "id", "comp_plot_g");
+    	comp_plot_g.appendChild( getCompositePlot(f, COMPOSITE_PLOT_HEIGHT, EventTypeToProcess.FIRE_EVENT, FireFilterType.NUMBER_OF_EVENTS, 0.5, 3));
+    	padding_grouper.appendChild( comp_plot_g );
+
+    	positionChartGroupersAndDrawTimeAxis(f);
+    };
+    
+    // Positions the various parts of the fire chart.
+    // This method also re-creates the time axis since it is dependent on the total height of the svg,
+    // due to the dashed tick lines that run vertically to denote years.
+    private void positionChartGroupersAndDrawTimeAxis(AbstractFireHistoryReader f){
+    	// calculate plot dimensions
     	int cur_bottom = 0; // used for tracking where the bottom of the chart is as it is being built
     	int index_plot_height = INDEX_PLOT_HEIGHT;
     	if(isIndexPlotVisible) { cur_bottom += index_plot_height + PLOT_SPACING; }
@@ -94,39 +145,24 @@ public class FireChartSVG {
     	
     	int total_height = cur_bottom + PLOT_SPACING;
     	
-    	
-        Element svgRoot = doc.getDocumentElement();
+    	// reset svg dimensions
+    	Element svgRoot = doc.getDocumentElement();
 
         svgRoot.setAttributeNS(null, "width", "100%");
     	svgRoot.setAttributeNS(null, "height", Integer.toString(total_height) + 50);
     	
-    	// attach the rectangle to the svg root element
-    	// svgRoot.appendChild( getRect(doc, svgNS, f) );
-    	Element padding_grouper = doc.createElementNS(svgNS, "g");
-    	padding_grouper.setAttributeNS(null, "id", "padding_g");
-    	padding_grouper.setAttributeNS(null, "transform", "translate (20,0)");
-    	svgRoot.appendChild(padding_grouper);	
-    	
     	// build time axis
-    	Element time_axis_g = doc.createElementNS(svgNS, "g");
-    	time_axis_g.setAttributeNS(null, "id", "time_axis_g");
+    	Element time_axis_g = doc.getElementById("time_axis_g");
+    	// TODO delete previous children
     	time_axis_g.appendChild( getTimeAxis(f, total_height));
-    	padding_grouper.appendChild(time_axis_g);
-    	
-    	// build and position chronology plot
-    	Element chrono_plot_g = doc.createElementNS(svgNS, "g");
-    	chrono_plot_g.appendChild( getChronologyPlot(f) );
+    	    	
+    	// set the translations for the chart groupers
+    	Element chrono_plot_g = doc.getElementById("chrono_plot_g");
     	chrono_plot_g.setAttributeNS(null, "transform", "translate(0,"+chronology_plot_y+")");
-    	padding_grouper.appendChild( chrono_plot_g );
     	
-    	// build and position composite plot
-    	Element comp_plot_g = doc.createElementNS(svgNS, "g");
-    	comp_plot_g.setAttributeNS(null, "id", "comp_plot_g");
+    	Element comp_plot_g = doc.getElementById("comp_plot_g");
     	comp_plot_g.setAttributeNS(null, "transform", "translate(0,"+composite_plot_y+")");
-    	comp_plot_g.appendChild( getCompositePlot(f, COMPOSITE_PLOT_HEIGHT, EventTypeToProcess.FIRE_EVENT, FireFilterType.NUMBER_OF_EVENTS, 0.5, 3));
-    	padding_grouper.appendChild( comp_plot_g );
-
-    };
+    }
     
     // ============ Time Axis ===========
     
