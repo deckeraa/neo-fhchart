@@ -72,10 +72,43 @@ public class NeoFHChart
         frame = f;
     }
 
+    public ButtonGroup createCompositePlotOptions() {
+    	ActionListener refresh = new ActionListener() { 
+        	public void actionPerformed(ActionEvent e) {
+        		if( e.getActionCommand() == "FIRE" ) {
+        			System.out.println("FIRE");
+        		}
+        	}
+        };
+    	
+    	JRadioButton fireOnlyEvents = new JRadioButton("Fire Events Only");
+    	fireOnlyEvents.setActionCommand("FIRE");
+    	fireOnlyEvents.addActionListener(refresh);
+    		
+        JRadioButton injuryOnlyEvents = new JRadioButton("Injury Events Only");
+        injuryOnlyEvents.setActionCommand("INJURY");
+        
+        JRadioButton fireAndInjuryEvents = new JRadioButton("Fire and Injury Events");
+        fireAndInjuryEvents.setActionCommand("BOTH");
+        
+        ButtonGroup composite_group = new ButtonGroup();
+        composite_group.add(fireOnlyEvents);
+        composite_group.add(injuryOnlyEvents);
+        composite_group.add(fireAndInjuryEvents);
+        
+        
+        
+        
+        return composite_group;
+    }
+    
     public JComponent createComponents() {
         final JPanel panel = new JPanel(new BorderLayout());
 
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
+        ButtonGroup composite_group = createCompositePlotOptions();
+        
         p.add(load_b);
         p.add(export_pdf_b);
         p.add(export_png_b);
